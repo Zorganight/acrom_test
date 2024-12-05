@@ -19,8 +19,8 @@ time.sleep(30)    # Waits 30 seconds for the process to complete
 master.pid_tuner(ID_2)                 # Starts the PID auto-tune process
 time.sleep(30)
 
-print(master.get_control_parameters_velocity(ID_1))    # Prints the calculated PID values
-print(master.get_control_parameters_velocity(ID_2))    # Prints the calculated PID values
+print(master.get_control_parameters_position(ID_1))    # Prints the calculated PID values
+print(master.get_control_parameters_position(ID_2))    # Prints the calculated PID values
 time.sleep(5)
 
 
