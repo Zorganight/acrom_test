@@ -1,6 +1,6 @@
 from smd.red import *
 
-SerialPort = "COM3"    # Serial port of the USB gateway module
+SerialPort =  "/dev/tty/USB0"    # Serial port of the USB gateway module
 baudrate = 115200      # Baud rate of the communication
 ID = 0                 # ID of the SMD board
 
@@ -17,3 +17,6 @@ print(master.get_control_parameters_velocity(ID))    # Prints the calculated PID
 
 master.enable_torque(ID, True)       # Enables motor to operate
 master.set_velocity(ID, 50)          # Sets motor to operate at 50 RPM
+
+
+

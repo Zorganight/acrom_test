@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Rosbridge Virtual Joystick Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.8.4/dist/nipplejs.min.js"></script>
+    <style>
+      #joystick-container {
+        width: 100%;
+        height: 300px;
+        position: relative;
+        background-color: #f0f0f0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Rosbridge Virtual Joystick Demo</h1>
+
+    <p>Ensure Rosbridge is running at <code>ws://localhost:9090</code> and the topic <code>/joystick</code> is active.</p>
+    <p>Move the joystick below to send data:</p>
+    <div id="joystick-container"></div>
+
+    <p>Connection Status: <span id="status" style="font-weight: bold;">N/A</span></p>
+
+    <script>
+      // Create ROS connection
+      const ros = new ROSLIB.Ros({ url: "ws://127.0.0.1:9090" });
+
+      // Update connection status
+      ros.on("connection", () => {
+        document.getElementById("status").textContent = "Connected";
+      });
+
+      ros.on("error", (error) => {
+        document.getElementById("status").textContent = `Error (${error})`;
+      });
+
+      ros.on("close", () => {
+        document.getElementById("status").textContent = "Disconnected";
+      });
+
+      // Create a ROS topic for the joystick
+      const joystickTopic = new ROSLIB.Topic({
+        ros: ros,
+        name: "/joystick",
+        messageType: "geometry_msgs/Vector3",
+      });
+
+      // Initialize nipple.js
+      const joystickContainer = document.getElementById("joystick-container");
+      const manager = nipplejs.create({
+        zone: joystickContainer,
+        mode: "static",
+        position: { left: "50%", top: "50%" },
+        color: "blue",
+      });
+
+      // Listen for joystick move events and publish x, y values
+      manager.on("move", (evt, data) => {
+        const x = data.vector.x || 0;
+        const y = data.vector.y || 0;
+
+        // Publish joystick data to the ROS topic
+        const message = new ROSLIB.Message({
+          x: x,
+          y: y,
+          z: 0, // z is unused but required for geometry_msgs/Vector3
+        });
+
+        joystickTopic.publish(message);
+      });
+
+      // Stop publishing when the joystick is released
+      manager.on("end", () => {
+        const message = new ROSLIB.Message({
+          x: 0,
+          y: 0,
+          z: 0,
+        });
+        joystickTopic.publish(message);
+      });
+    </script>
+  </body>
+</html>

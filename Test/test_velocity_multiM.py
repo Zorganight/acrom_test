@@ -30,5 +30,13 @@ time.sleep(5)
 master.enable_torque(ID_1, True)      #enables the motor torque to start rotating
 master.enable_torque(ID_2, True)      #enables the motor torque to start rotating
 
-master.set_velocity(ID_1, 50)          # Sets motor to operate at 50 RPM
-master.set_velocity(ID_2, 50)          # Sets motor to operate at 50 RPM
+
+try:
+    while True:
+        master.set_velocity(ID_1, 50)          # Sets motor to operate at 50 RPM
+        master.set_velocity(ID_2, 50)          # Sets motor to operate at 50 RPM
+
+except KeyboardInterrupt:
+    print("Exiting program...")
+    master.enable_torque(ID_1, False)
+    master.enable_torque(ID_2, False)
